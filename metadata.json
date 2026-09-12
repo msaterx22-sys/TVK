@@ -1,0 +1,6 @@
+{
+  "name": "அச்சரப்பாக்கம் மக்கள் குறைதீர்ப்பு மையம் - TVK",
+  "description": "அச்சரப்பாக்கம் பேரூராட்சி 15 வார்டு மக்களின் குறைகளைக் கண்டறிந்து அரசு அதிகாரிகளிடம் சமர்ப்பிக்கும் தளம் மற்றும் AI மனு உருவாக்குநர்.",
+  "requestFramePermissions": ["camera", "microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,17 @@
+node_modules/
+build/
+dist/
+dist-electron/
+build-electron/
+coverage/
+*.zip
+*.exe
+.DS_Store
+*.log
+.env*
+!.env.example
+tvk.exe
+android/local.properties
+android/.gradle/
+android/app/build/
+android/build/
