@@ -240,7 +240,7 @@ export const PrintableQRModal: React.FC<PrintableQRModalProps> = ({
               }`}>
                 {selectedPetitions.map((petition) => {
                   const statusInfo = getStatusLabel(petition.status);
-                  const qrUrl = `${window.location.origin}?petition=${petition.id}`;
+                  const qrUrl = `${window.location.origin}${import.meta.env.BASE_URL}?petition=${encodeURIComponent(petition.id)}`;
 
                   return (
                     <div
