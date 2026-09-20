@@ -20,7 +20,7 @@ export const downloadPetitionPDF = async (petition: Petition): Promise<boolean> 
   container.style.padding = '0';
   container.style.boxSizing = 'border-box';
 
-  const shareUrl = `${window.location.origin}${window.location.pathname}?petition=${encodeURIComponent(petition.id)}`;
+  const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}?petition=${encodeURIComponent(petition.id)}`;
 
   // Try to grab existing QR canvas if available
   let qrDataUrl = '';
@@ -276,9 +276,67 @@ ${formalText}
     });
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+    const pageHeight = pdf.internal.pageSize.getHeight();
+    const sourcePageHeight = Math.floor((pageHeight * canvas.width) / pdfWidth);
+    const pixels = canvas.getContext('2d')?.getImageData(0, 0, canvas.width, canvas.height).data;
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    let sourceTop = 0;
+    let pageIndex = 0;
+    while (sourceTop < canvas.height) {
+      const targetBottom = Math.min(canvas.height, sourceTop + sourcePageHeight);
+      let sourceBottom = targetBottom;
+
+      if (targetBottom < canvas.height && pixels) {
+        const searchStart = Math.max(sourceTop + 80, targetBottom - 120);
+        const searchEnd = Math.min(canvas.height - 1, targetBottom + 120);
+        let bestScore = Number.POSITIVE_INFINITY;
+
+        for (let row = searchStart; row <= searchEnd; row += 2) {
+          let darkPixels = 0;
+          for (let x = 12; x < canvas.width - 12; x += 8) {
+            const pixel = (row * canvas.width + x) * 4;
+            if (pixels[pixel] < 235 || pixels[pixel + 1] < 235 || pixels[pixel + 2] < 235) {
+              darkPixels++;
+            }
+          }
+          if (darkPixels < bestScore) {
+            bestScore = darkPixels;
+            sourceBottom = row;
+          }
+        }
+      }
+
+      const sliceHeight = sourceBottom - sourceTop;
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sliceHeight;
+      pageCanvas.getContext('2d')?.drawImage(
+        canvas,
+        0,
+        sourceTop,
+        canvas.width,
+        sliceHeight,
+        0,
+        0,
+        canvas.width,
+        sliceHeight
+      );
+
+      if (pageIndex > 0) {
+        pdf.addPage();
+      }
+      pdf.addImage(
+        pageCanvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        0,
+        pdfWidth,
+        (sliceHeight * pdfWidth) / canvas.width
+      );
+
+      sourceTop = sourceBottom;
+      pageIndex++;
+    }
     pdf.save(`TVK_Petition_${petition.trackingNo}.pdf`);
     return true;
   } catch (err) {
