@@ -29,6 +29,20 @@ export async function createApp() {
   }
 
   app.use(express.json({ limit: "5mb" }));
+  app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (origin && (origin.endsWith('.github.io') || origin === 'http://localhost:3000' || origin === 'http://127.0.0.1:3000')) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Vary', 'Origin');
+      res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    }
+    if (req.method === 'OPTIONS') {
+      res.sendStatus(204);
+      return;
+    }
+    next();
+  });
 
   // In-memory persistent data state for fallback or supplemental app state
   let petitions: Petition[] = [...INITIAL_PETITIONS];
