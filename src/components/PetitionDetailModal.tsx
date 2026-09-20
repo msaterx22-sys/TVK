@@ -48,7 +48,7 @@ export const PetitionDetailModal: React.FC<PetitionDetailModalProps> = ({
   }, [petition]);
 
   // Generate unique shareable link for this petition
-  const shareUrl = `${window.location.origin}${window.location.pathname}?petition=${encodeURIComponent(petition.id)}`;
+  const shareUrl = `${window.location.origin}${import.meta.env.BASE_URL}?petition=${encodeURIComponent(petition.id)}`;
 
   const handleDownloadQR = () => {
     const canvas = document.getElementById(`qr-canvas-${petition.id}`) as HTMLCanvasElement;
