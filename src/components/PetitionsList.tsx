@@ -572,7 +572,7 @@ export const PetitionsList: React.FC<PetitionsListProps> = ({
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          const pUrl = `${window.location.origin}${window.location.pathname}?petition=${encodeURIComponent(petition.id)}`;
+                          const pUrl = `${window.location.origin}${import.meta.env.BASE_URL}?petition=${encodeURIComponent(petition.id)}`;
                           const text = `📌 TVK அச்சரப்பாக்கம் மக்கள் குறைதீர்ப்பு மையம்\n\nமனு எண்: ${petition.trackingNo}\nதலைப்பு: ${petition.title}\nவார்டு: வார்டு ${petition.wardNo} (${petition.streetName})\n\nபொதுமக்கள் கோரிக்கைக்கு ஆதரவு அளிக்க கிளிக் செய்யவும்: ${pUrl}`;
                           window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
                         }}
